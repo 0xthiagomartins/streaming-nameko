@@ -9,9 +9,13 @@ def test_unary_unary(grpc_client):
 
 
 def test_unary_stream(grpc_client):
-    """Test the Unary-Stream RPC method."""
-    responses = list(grpc_client.unary_stream(ExampleRequest(value="Hello")))
-    assert responses == ["Stream part 1 for 'Hello'", "Stream part 2 for 'Hello'"]
+    print("""Test the Unary-Stream RPC method.""")
+    responses = grpc_client.unary_stream(ExampleRequest(value="Hello"))
+    r = []
+    for response in responses:
+        r.append(response.message)
+        assert response.message == "Hello"
+    assert r == ["Hello", "Hello"]
 
 
 def test_stream_unary(grpc_client):
@@ -19,12 +23,14 @@ def test_stream_unary(grpc_client):
     response = grpc_client.stream_unary(
         [ExampleRequest(value="Hello"), ExampleRequest(value="World")]
     )
-    assert response == "Stream-Unary response to 'Hello World'"
+    assert response.message == "Hello,World"
 
 
 def test_stream_stream(grpc_client):
     """Test the Stream-Stream RPC method."""
     responses = list(
-        grpc_client.stream_stream(ExampleRequest(value=["Hello", "World"]))
+        grpc_client.stream_stream(
+            [ExampleRequest(value="Hello"), ExampleRequest(value="World")]
+        )
     )
-    assert responses == ["Stream part for 'Hello'", "Stream part for 'World'"]
+    assert [response.message for response in responses] == ["Hello", "World"]
