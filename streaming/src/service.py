@@ -1,45 +1,37 @@
 from nameko.rpc import rpc
-from nameko_grpc import GrpcService
+from src.service_pb2 import ExampleReply
+from src.service_pb2_grpc import exampleStub
+from nameko_grpc.entrypoint import Grpc
 
 
-class StreamingService(GrpcService):
+grpc = Grpc.implementing(exampleStub)
+
+
+class StreamingService:
     name = "streaming"
 
-    @rpc
-    def unary_unary_method(self, request):
-        """
-        Unary-Unary RPC:
-        - Receives a single request and returns a single response.
-        - This is the simplest form of RPC where both the client and server exchange one message each.
-        """
-        return f"Unary-Unary response to '{request}'"
+    @grpc
+    def unary_unary(self, request, context):
+        message = request.value * (request.multiplier or 1)
+        return ExampleReply(message=f"Unary-Unary response to '{message}'")
 
-    @rpc
-    def unary_stream_method(self, request):
-        """
-        Unary-Stream RPC:
-        - Receives a single request and returns a stream of responses.
-        - Useful when the server needs to send multiple pieces of data in response to a single client request.
-        """
-        for msg in [f"Stream part 1 for '{request}'", f"Stream part 2 for '{request}'"]:
-            yield msg
+    @grpc
+    def unary_stream(self, request, context):
+        message = request.value * (request.multiplier or 1)
+        yield ExampleReply(message=message, seqno=1)
+        yield ExampleReply(message=message, seqno=2)
 
-    @rpc
-    def stream_unary_method(self, request):
-        """
-        Stream-Unary RPC:
-        - Receives a stream of requests and returns a single response.
-        - Ideal for scenarios where the client sends multiple messages to the server and expects a single consolidated response.
-        """
-        combined = " ".join(request)
-        return f"Stream-Unary response to '{combined}'"
+    @grpc
+    def stream_unary(self, request, context):
+        messages = []
+        for req in request:
+            message = req.value * (req.multiplier or 1)
+            messages.append(message)
 
-    @rpc
-    def stream_stream_method(self, request):
-        """
-        Stream-Stream RPC:
-        - Both the client and server exchange streams of messages.
-        - Allows for continuous two-way communication between client and server.
-        """
-        for msg in request:
-            yield f"Stream part for '{msg}'"
+        return ExampleReply(message=",".join(messages))
+
+    @grpc
+    def stream_stream(self, request, context):
+        for index, req in enumerate(request):
+            message = req.value * (req.multiplier or 1)
+            yield ExampleReply(message=message, seqno=index + 1)

@@ -1,2 +1,4 @@
 resources
 __pycache__
++ streaming/src/service_pb2.py
++ streaming/src/service_pb2_grpc.py

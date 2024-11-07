@@ -1,5 +1,3 @@
-# Streaming over AMQP using grpc
-
 # Nameko Streams Boilerplate
 
 This project serves as a boilerplate for Nameko streams, featuring a FastAPI gateway and a Nameko-based streaming service. It demonstrates four request-response patterns with support for asynchronous calls.
@@ -20,8 +18,9 @@ This project serves as a boilerplate for Nameko streams, featuring a FastAPI gat
 │ ├── requirements.txt # Streaming Dependencies
 │ └── resources
 │ └── .env # Streaming Environment Variables
+├── proto
+│ └── service.proto # gRPC Service Definitions
 └── README.md
-
 
 ## Services
 
@@ -46,3 +45,11 @@ This project serves as a boilerplate for Nameko streams, featuring a FastAPI gat
 
 ## Environment Variables
 Both services use environment variables defined in their respective `resources/.env` files. Ensure to configure them as needed.
+
+## gRPC Code Generation
+
+Run the following script to generate gRPC code from `.proto` files:
+
+```bash
+./generate_grpc.sh
+```

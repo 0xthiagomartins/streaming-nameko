@@ -1,3 +1,6 @@
 nameko
 nameko-grpc
-python-dotenv 
+python-dotenv
+pytest
+pytest-cov
+grpcio-tools
