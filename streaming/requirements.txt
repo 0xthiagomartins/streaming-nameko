@@ -1,0 +1,3 @@
+nameko
+nameko-grpc
+python-dotenv 
